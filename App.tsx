@@ -84,6 +84,10 @@ function App() {
    * This is the bridge between the web app and the local OS.
    */
   const handleDownload = (shortcut: Shortcut) => {
+    // We export PORT so the child process (node/npm/python) inherits it.
+    // This works for Next.js, CRA, Vite, Express, Flask (if configured), etc.
+    const portExport = shortcut.port ? `export PORT=${shortcut.port}` : '';
+
     const scriptContent = `#!/bin/bash
 # MacDeck Launcher for ${shortcut.name}
 
@@ -95,9 +99,14 @@ ${shortcut.port ? `open "http://localhost:${shortcut.port}"` : ''}
 # 2. Navigate to directory
 cd "${shortcut.path}" || { echo "❌ Directory not found: ${shortcut.path}"; exit 1; }
 
-# 3. Execute Command
+# 3. Set Environment & Execute
+${portExport ? `echo "🔌 Setting PORT to ${shortcut.port}"` : ''}
+${portExport}
+
 echo "📂 Working Directory: $(pwd)"
 echo "⚡ Running: ${shortcut.command}"
+
+# Run the command
 ${shortcut.command}
 `;
 
@@ -246,6 +255,7 @@ ${shortcut.command}
         <AddShortcutForm 
           key={editingShortcut ? editingShortcut.id : 'new'}
           initialData={editingShortcut}
+          existingShortcuts={shortcuts}
           onSave={handleSaveShortcut} 
           onCancel={closeModal} 
         />

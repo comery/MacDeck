@@ -1,12 +1,14 @@
 import { GoogleGenAI } from "@google/genai";
 
+// Support both Vite (import.meta.env) and standard (process.env) environment variables
+// @ts-ignore - import.meta is available in Vite environments
+const apiKey = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_KEY) || process.env.API_KEY;
+
 // Initialize Gemini
-// Note: In a real production app, you might proxy this through a backend to protect the key,
-// but for a local tool/demo, env var usage is standard per instructions.
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const ai = new GoogleGenAI({ apiKey: apiKey });
 
 export const suggestCommand = async (description: string): Promise<string> => {
-  if (!process.env.API_KEY) {
+  if (!apiKey) {
     console.warn("No API Key provided for Gemini");
     return "npm run dev"; // Fallback
   }
