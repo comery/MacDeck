@@ -1,0 +1,5 @@
+{
+  "name": "MacDeck",
+  "description": "A Mac-styled local web app shortcut manager. Create, organize, and generate executable launchers for your local development projects.",
+  "requestFramePermissions": []
+}
